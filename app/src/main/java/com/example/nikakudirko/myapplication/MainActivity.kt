@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.setValue
@@ -98,18 +99,22 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             Scaffold(
-
+               // Modifier.background(color = colorResource(id = R.color.navbar_color)),
 
                 bottomBar = {
                     NavigationBar(
                         containerColor = colorResource(id = R.color.navbar_color),
-                       // contentColor = colorResource(id = R.color.navbar_item),
-
+                        contentColor = colorResource(id = R.color.navbar_item)
                     ){
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentDestination = navBackStackEntry?.destination
                         items.forEachIndexed{ index, item ->
                             NavigationBarItem(
+
+                                colors = NavigationBarItemDefaults.colors(
+                                    indicatorColor = colorResource(id = R.color.navbar_item)
+                                ),
+
                                 selected = currentDestination?.hierarchy?.any{it.route == item.title} == true ,
                                 onClick = {
 
