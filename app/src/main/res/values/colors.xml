@@ -16,4 +16,12 @@
     <color name="text_dark_green2">#102310</color>
 
     <color name="card_back">#3e8c3f</color>
+
+
+    <!-->for home screen cards<-->
+
+    <color name="draft_card">#56953d</color>
+    <color name="not_draft_card">#41702e</color>
+
+    <color name="Screen_title_text">#3b6529</color>
 </resources>

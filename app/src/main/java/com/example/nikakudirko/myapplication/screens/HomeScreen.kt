@@ -35,10 +35,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -58,14 +60,25 @@ fun HomeScreen(navController: NavController){
         mutableStateListOf<NewsArticle>()
     }
 
-    Column {
-        Text(text = "Home screen")
+    Column(
+        modifier = Modifier
+        .background(colorResource(id = R.color.background_light_green)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Home screen",
+            color = Color.Black,
+            fontSize = 35 .sp,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = 4 .sp
+        )
 
         LazyColumn(
             modifier = Modifier
                 .padding(vertical = 4.dp)
                 .fillMaxSize()
-                .background(colorResource(id = R.color.background_light_green))
+
         ){
             items(items = rep){ item ->
                 newCard(navController, item)
@@ -81,9 +94,9 @@ fun newCard(navController: NavController, item: NewsArticle) {
     Card(
         colors = if(item.isDraft)
             CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.card_back),
+            containerColor = colorResource(id = R.color.draft_card),
         ) else CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.teal_200),
+            containerColor = colorResource(id = R.color.not_draft_card),
         ) ,
         modifier = Modifier
             .padding(vertical = 4 .dp, horizontal = 8 .dp),
@@ -135,9 +148,13 @@ fun articleEntityView(newsArticle: NewsArticle){
 
                 if(expanded){
                     Column {
-                        Text(text = ("kkdkdkkdkncdk\t").repeat(3))
+                        Text(text = ("в задании ничего не сказано про текст статьи\t").repeat(3))
 
 
+                    }
+                    
+                    if(newsArticle.isDraft){
+                        Text(text = "Черновик")
                     }
 
                 }
