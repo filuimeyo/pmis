@@ -24,4 +24,7 @@
     <color name="not_draft_card">#41702e</color>
 
     <color name="Screen_title_text">#3b6529</color>
+
+    <color name="navbar_color">#88a679</color>
+    <color name="navbar_item">#749763</color>
 </resources>

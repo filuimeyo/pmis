@@ -7,10 +7,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Badge
@@ -25,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -77,10 +76,10 @@ class MainActivity : ComponentActivity() {
                     hasNews = false,
                 ),
                 BottomNavigationItem(
-                    title = "edit",
-                    selectedIcon = Icons.Filled.Edit,
-                    unselectedIcon = Icons.Outlined.Edit,
-                    hasNews = true,
+                    title = "new",
+                    selectedIcon = Icons.Filled.AddCircle,
+                    unselectedIcon = Icons.Outlined.AddCircleOutline,
+                    hasNews = false,
 
                 ),
                 BottomNavigationItem(
@@ -88,7 +87,7 @@ class MainActivity : ComponentActivity() {
                     selectedIcon = Icons.Filled.Info,
                     unselectedIcon = Icons.Outlined.Info,
                     hasNews = false,
-                    badgeCount = 23,
+                  //  badgeCount = 23,
 
                 ),
             )
@@ -99,8 +98,14 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             Scaffold(
+
+
                 bottomBar = {
-                    NavigationBar{
+                    NavigationBar(
+                        containerColor = colorResource(id = R.color.navbar_color),
+                       // contentColor = colorResource(id = R.color.navbar_item),
+
+                    ){
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentDestination = navBackStackEntry?.destination
                         items.forEachIndexed{ index, item ->

@@ -1,6 +1,6 @@
 package com.example.nikakudirko.myapplication
 
-class ArtickleRepository {
+class ArticleRepository {
     fun getAll():List<NewsArticle>{
         return listOf(
             NewsArticle(

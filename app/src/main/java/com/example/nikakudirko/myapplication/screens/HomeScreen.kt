@@ -1,23 +1,16 @@
 package com.example.nikakudirko.myapplication.screens
 
-import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
@@ -26,18 +19,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,18 +36,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.nikakudirko.myapplication.NewsArticle
 import com.example.nikakudirko.myapplication.R
-import com.example.nikakudirko.myapplication.ArtickleRepository
+import com.example.nikakudirko.myapplication.ArticleRepository
 import com.example.nikakudirko.myapplication.Screen
 
 @Composable
 fun HomeScreen(navController: NavController){
 
-    val articklesRepository = ArtickleRepository()
-    val rep = articklesRepository.getAll()
+    val articlesRepository = ArticleRepository()
+    val rep = articlesRepository.getAll()
 
-    val deletedItem = remember {
-        mutableStateListOf<NewsArticle>()
-    }
 
     Column(
         modifier = Modifier
@@ -81,16 +67,18 @@ fun HomeScreen(navController: NavController){
 
         ){
             items(items = rep){ item ->
-                newCard(navController, item)
+                NewCard(navController, item)
             }
         }
+
+
     }
 
 
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun newCard(navController: NavController, item: NewsArticle) {
+fun NewCard(navController: NavController, item: NewsArticle) {
     Card(
         colors = if(item.isDraft)
             CardDefaults.cardColors(
@@ -110,13 +98,13 @@ fun newCard(navController: NavController, item: NewsArticle) {
             }
         }
     ){
-        articleEntityView(item)
+        ArticleEntityView(item)
     }
 }
 
 
 @Composable
-fun articleEntityView(newsArticle: NewsArticle){
+fun ArticleEntityView(newsArticle: NewsArticle){
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -173,4 +161,5 @@ fun articleEntityView(newsArticle: NewsArticle){
 
         }
 }
+
 
