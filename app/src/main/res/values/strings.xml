@@ -11,8 +11,8 @@
 
 
     //links
-    <string name="mail_link">link</string>
-    <string name="github_link">link</string>
+    <string name="mail_link">nikakud24@gmail.com</string>
+    <string name="github_link">filuimeyo</string>
 
     //facts
     <string name="fact1">This app is developed by Nika</string>

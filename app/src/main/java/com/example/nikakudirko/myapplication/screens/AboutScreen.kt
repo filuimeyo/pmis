@@ -331,6 +331,7 @@ fun AboutScreen(){
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier
                                 )
+                                
                                 Text(
                                     stringResource(R.string.github_link),
                                     color = colorResource(id = R.color.white),
