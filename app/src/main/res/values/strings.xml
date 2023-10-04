@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">papersave</string>
+    <string name="about_screen_top_app_bar">About application</string>
+    <string name="about_screen_string">PaperSave</string>
+    <string name="about_screen_little_string">for news just in your phone</string>
+
+    //linkNames
+    <string name="mail_link_name">Email</string>
+    <string name="github_link_name">Github</string>
+
+
+
+    //links
+    <string name="mail_link">link</string>
+    <string name="github_link">link</string>
+
+    //facts
+    <string name="fact1">This app is developed by Nika</string>
+    <string name="fact2">It could be used to read</string>
+    <string name="fact3">and post new articles</string>
+
+
+</resources>
