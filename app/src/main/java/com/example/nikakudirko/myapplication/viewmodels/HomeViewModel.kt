@@ -3,16 +3,21 @@ package com.example.nikakudirko.myapplication.viewmodels
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.nikakudirko.myapplication.NewsArticle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 interface NewsArticleDataSource {
@@ -56,29 +61,44 @@ object InMemoryNewsArticleDatasource : NewsArticleDataSource {
     private val newsArticles = DefaultArticles.associateBy { it.id }.toMutableMap() // (1)
 
     private val _articleFlow = MutableSharedFlow<Map<UUID, NewsArticle>>(1) // (2)
+
+
+
     override fun getArticles(): Flow<List<NewsArticle>> {
+
+        GlobalScope.launch(Dispatchers.Default) {
+            while (true){
+                _articleFlow.emit(newsArticles)
+                delay(5000L)
+            }
+        }
         return _articleFlow.asSharedFlow().map{ it.values.toList() }
     }
 
    /* override fun getArticles(): Flow<List<NewsArticle>> = flow{
         while (true){
-            delay(500000L)
+            delay(5000L)
             emit(newsArticles.values.toList())
         }
-    }
-*/
+    }*/
     override fun getArticle(id: UUID): Flow<NewsArticle?> {
+
+       GlobalScope.launch(Dispatchers.Default) {
+           while (true){
+               _articleFlow.emit(newsArticles)
+               delay(5000L)
+           }
+       }
+
         return _articleFlow.asSharedFlow().map { it[id] }
     }
 
     override suspend fun upsert(newsArticle: NewsArticle) {
         newsArticles[newsArticle.id] = newsArticle
-        //??
     }
 
     override suspend fun delete(id: UUID) {
        newsArticles.remove(id)
-        //??
     }
 }
 
@@ -112,19 +132,53 @@ object ArticlesRepositoryImpl : ArticlesRepository {
 
 }
 
+
+
+sealed class WorkResult<out R> {
+    data class Success<out T>(val data: T) : WorkResult<T>()
+    data class Error(val exception: Exception) : WorkResult<Nothing>()
+    object Loading : WorkResult<Nothing>()
+}
+
 sealed interface HomeState {
     object Loading : HomeState
-    //data
-    object Empty: HomeState
-    data class DisplayingArticles(val articles: List<NewsArticle>): HomeState
+     object Empty: HomeState
+    data class DisplayingCats(val cats: List<NewsArticle>): HomeState
     data class Error(val e: Exception) : HomeState
 }
 
 
-class HomeViewModel() : ViewModel() {
+data class ArticlesListUiState(
+    val articles: List<NewsArticle> = emptyList(),
+    val isLoading: Boolean = false,
+    val isError: Boolean = false
+)
 
 
 
+class HomeViewModel  : ViewModel() {
+
+    private val repository: ArticlesRepository = ArticlesRepositoryImpl
+    private val articles = repository.getArticles()
+
+    private val articleLoadingItems = MutableStateFlow(0)
+    val uiState = combine(articles, articleLoadingItems){ articles, loadingItems ->
+        ArticlesListUiState(
+            articles = articles.toList(),
+            isLoading = loadingItems > 0,
+            isError = false
+
+        )
+        /*when(articles){
+            is WorkResult.Error -> ArticlesListUiState(isError = true)
+            is WorkResult.Loading -> ArticlesListUiState(isLoading = true)
+            is WorkResult.Success -> ArticlesListUiState(articles = articles.data, isLoading = loadingItems > 0)
+        }*/
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ArticlesListUiState(isLoading = true)
+    )
 
     private companion object {
 
@@ -155,11 +209,6 @@ class HomeViewModel() : ViewModel() {
 
         )
     }
-
-    val repository: ArticlesRepository = ArticlesRepositoryImpl
-
-
-
 
     val items: SnapshotStateList<NewsArticle> = DefaultArticles.toMutableStateList()
 

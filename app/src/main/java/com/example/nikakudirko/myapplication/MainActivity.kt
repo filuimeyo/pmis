@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.AddCircleOutline
+//import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Badge
@@ -37,6 +38,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.nikakudirko.myapplication.screens.AboutScreen
 import com.example.nikakudirko.myapplication.screens.EditScreen
 import com.example.nikakudirko.myapplication.screens.HomeScreen
+import dagger.hilt.android.AndroidEntryPoint
 
 data class BottomNavigationItem(
     val title: String,
@@ -46,6 +48,7 @@ data class BottomNavigationItem(
     val badgeCount: Int? = null
 )
 
+//@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     companion object {

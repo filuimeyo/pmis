@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nikakudirko.myapplication.NewsArticle
@@ -43,15 +44,19 @@ import com.example.nikakudirko.myapplication.Screen
 import com.example.nikakudirko.myapplication.viewmodels.HomeViewModel
 import java.util.UUID
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 
 
 @Composable
 fun HomeScreen(controller: NavController) {
-    val viewModel = viewModel<HomeViewModel>()
+    val viewModel: HomeViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     HomeScreenContent(
-        items = viewModel.items,
+        items = uiState.articles,
         onEdit = { controller.navigate(Screen.EditScreen.route) },
-        onRemove = viewModel::onClickRemoveArticle ,
+        onRemove = { } ,
         navController = controller
     )
 }
@@ -63,7 +68,7 @@ private fun HomeScreenContent(
     onEdit: () -> Unit,
     navController: NavController
 ) {
-
+    System.out.println(items.toString())
     Column(
         modifier = Modifier
             .background(colorResource(id = R.color.background_light_green)),
@@ -115,9 +120,9 @@ private fun ArticleItem(
             .padding(vertical = 4 .dp, horizontal = 8 .dp),
         onClick = {onEdit(article.id)}
     ){
-        var expanded by remember {
+       /* var expanded by remember {
             mutableStateOf(false)
-        }
+        }*/
 
 
         Row(
@@ -148,7 +153,7 @@ private fun ArticleItem(
                     text = "Автор: "  + article.author
                 )
 
-                if(expanded){
+              /*  if(expanded){
                     Column {
                         Text(text = ("в задании ничего не сказано про текст статьи\t").repeat(3))
 
@@ -163,7 +168,7 @@ private fun ArticleItem(
                         )
                     }
 
-                }
+                }*/
 
 
             }
@@ -184,14 +189,14 @@ private fun ArticleItem(
                 }
             }
 
-            IconButton(
+           /* IconButton(
                 onClick = { expanded = !expanded }
             ) {
                 Icon(
                     imageVector = if(expanded) Icons.Filled.KeyboardArrowUp
                     else Icons.Filled.KeyboardArrowDown,
                     contentDescription = null)
-            }
+            }*/
 
 
 
