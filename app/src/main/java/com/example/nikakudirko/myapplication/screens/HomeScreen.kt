@@ -47,17 +47,19 @@ import java.util.UUID
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 
-
 @Composable
-fun HomeScreen(controller: NavController) {
+fun HomeScreen(navController: NavController) {
     val viewModel: HomeViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreenContent(
         items = uiState.articles,
-        onEdit = { controller.navigate(Screen.EditScreen.route) },
-        onRemove = { } ,
-        navController = controller
+        onEdit = {
+           println("Naigate with " + it)
+            navController.navigate(Screen.EditScreen.route + "?articleId="  + it.toString().trim())
+        },
+        onRemove = { },
+        navController = navController
     )
 }
 
@@ -65,7 +67,7 @@ fun HomeScreen(controller: NavController) {
 private fun HomeScreenContent(
     items: List<NewsArticle>,
     onRemove: (NewsArticle) -> Unit,
-    onEdit: () -> Unit,
+    onEdit: (UUID) -> Unit,
     navController: NavController
 ) {
     System.out.println(items.toString())
@@ -77,10 +79,10 @@ private fun HomeScreenContent(
         Text(
             text = "Home screen",
             color = Color.Black,
-            fontSize = 35 .sp,
+            fontSize = 35.sp,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.ExtraBold,
-            letterSpacing = 4 .sp
+            letterSpacing = 4.sp
         )
 
         LazyColumn(
@@ -88,11 +90,17 @@ private fun HomeScreenContent(
                 .padding(vertical = 4.dp)
                 .fillMaxSize()
 
-        ){
-            items(items = items){ item ->
-               ArticleItem(article = item, onRemove = {
+        ) {
+            items(items = items) { item ->
+                ArticleItem(
+                    article = item,
+                    onRemove = {},
+                    onEdit = {
 
-               }, onEdit={navController.navigate(Screen.EditScreen.route)})
+                        onEdit(it)
+
+                    }
+                )
             }
         }
 
@@ -110,19 +118,21 @@ private fun ArticleItem(
 ) {
 
     Card(
-        colors = if(article.isDraft)
+        colors = if (article.isDraft)
             CardDefaults.cardColors(
                 containerColor = colorResource(id = R.color.draft_card),
             ) else CardDefaults.cardColors(
             containerColor = colorResource(id = R.color.not_draft_card),
-        ) ,
+        ),
         modifier = Modifier
-            .padding(vertical = 4 .dp, horizontal = 8 .dp),
-        onClick = {onEdit(article.id)}
-    ){
-       /* var expanded by remember {
-            mutableStateOf(false)
-        }*/
+            .padding(vertical = 4.dp, horizontal = 8.dp),
+        onClick = {
+            onEdit(article.id)
+        }
+    ) {
+        /* var expanded by remember {
+             mutableStateOf(false)
+         }*/
 
 
         Row(
@@ -134,41 +144,41 @@ private fun ArticleItem(
                         stiffness = Spring.StiffnessLow
                     )
                 )
-        ){
+        ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .padding(12.dp)
-            ){
+            ) {
 
                 Text(
                     text = article.title,
-                    fontSize = 20 .sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
 
                 Text(
-                    fontSize = 15 .sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
-                    text = "Автор: "  + article.author
+                    text = "Автор: " + article.author
                 )
 
-              /*  if(expanded){
-                    Column {
-                        Text(text = ("в задании ничего не сказано про текст статьи\t").repeat(3))
+                /*  if(expanded){
+                      Column {
+                          Text(text = ("в задании ничего не сказано про текст статьи\t").repeat(3))
 
 
-                    }
+                      }
 
-                    if(article.isDraft){
-                        Text(
-                            modifier= Modifier.padding(vertical = 5 .dp),
-                            fontSize = 15 .sp,
-                            text = "Это черновик"
-                        )
-                    }
+                      if(article.isDraft){
+                          Text(
+                              modifier= Modifier.padding(vertical = 5 .dp),
+                              fontSize = 15 .sp,
+                              text = "Это черновик"
+                          )
+                      }
 
-                }*/
+                  }*/
 
 
             }
@@ -189,15 +199,14 @@ private fun ArticleItem(
                 }
             }
 
-           /* IconButton(
-                onClick = { expanded = !expanded }
-            ) {
-                Icon(
-                    imageVector = if(expanded) Icons.Filled.KeyboardArrowUp
-                    else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = null)
-            }*/
-
+            /* IconButton(
+                 onClick = { expanded = !expanded }
+             ) {
+                 Icon(
+                     imageVector = if(expanded) Icons.Filled.KeyboardArrowUp
+                     else Icons.Filled.KeyboardArrowDown,
+                     contentDescription = null)
+             }*/
 
 
         }

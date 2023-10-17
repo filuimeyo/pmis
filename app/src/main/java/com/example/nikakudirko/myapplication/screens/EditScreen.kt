@@ -43,14 +43,14 @@ import com.example.nikakudirko.myapplication.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditScreen( navController: NavController, newsArticle: NewsArticle? = null){
-
+fun EditScreen(navController: NavController, articleId: String? = null) {
+    println(articleId)
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.background_light_green))
             .padding(20.dp),
-       // verticalArrangement = Arrangement.Center,
+        // verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
@@ -61,26 +61,27 @@ fun EditScreen( navController: NavController, newsArticle: NewsArticle? = null){
             mutableStateOf("")
         }
         var articleText by remember {
-        mutableStateOf("")
-    }
+            mutableStateOf("")
+        }
 
 
         val checkedState = remember {
             mutableStateOf(true)
         }
 
+
         Text(
             text = "Edit screen",
             color = colorResource(id = R.color.text_dark_green2),
-            fontSize = 35 .sp,
+            fontSize = 35.sp,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.ExtraBold,
-            letterSpacing = 4 .sp
+            letterSpacing = 4.sp
         )
         TextField(
             modifier = Modifier,
             value = authorNameText,
-            onValueChange = { authorNameText = it},
+            onValueChange = { authorNameText = it },
             textStyle = LocalTextStyle.current.copy(
                 textAlign = TextAlign.Left
             ),
@@ -106,7 +107,7 @@ fun EditScreen( navController: NavController, newsArticle: NewsArticle? = null){
             modifier = Modifier
                 .padding(vertical = 10.dp),
             value = titleText,
-            onValueChange = { titleText = it},
+            onValueChange = { titleText = it },
             textStyle = LocalTextStyle.current.copy(
                 textAlign = TextAlign.Left
             ),
@@ -131,7 +132,7 @@ fun EditScreen( navController: NavController, newsArticle: NewsArticle? = null){
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-        ){
+        ) {
 
             Switch(
                 checked = checkedState.value,
@@ -143,7 +144,7 @@ fun EditScreen( navController: NavController, newsArticle: NewsArticle? = null){
                 )
             )
             Text(
-                modifier = Modifier.padding(start = 10 .dp),
+                modifier = Modifier.padding(start = 10.dp),
                 text = "Is this artickle draft"
             )
 
@@ -151,13 +152,13 @@ fun EditScreen( navController: NavController, newsArticle: NewsArticle? = null){
 
 
         Column(
-            modifier = Modifier.height(300 .dp)
+            modifier = Modifier.height(300.dp)
         ) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxHeight(),
                 value = articleText,
-                onValueChange = { articleText = it},
+                onValueChange = { articleText = it },
                 textStyle = LocalTextStyle.current.copy(
                     textAlign = TextAlign.Left
                 ),
@@ -173,26 +174,25 @@ fun EditScreen( navController: NavController, newsArticle: NewsArticle? = null){
 
 
         Button(
-            modifier = Modifier.padding(vertical = 10 .dp),
+            modifier = Modifier.padding(vertical = 10.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(id = R.color.card_back),
 
-            ),
+                ),
             onClick = {
-                navController.navigate(Screen.HomeScreen.route){
+                navController.navigate(Screen.HomeScreen.route) {
                     launchSingleTop = true //?????
-                    popUpTo(navController.graph.findStartDestination().id){
+                    popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                     }
                     restoreState = true
                 }
             },
 
-        ) {
-            Icon(imageVector = Icons.Filled.AttachFile, contentDescription = null )
+            ) {
+            Icon(imageVector = Icons.Filled.AttachFile, contentDescription = null)
             Text(
-                text = if(newsArticle == null) "Add new article"
-                else "Commit changes"
+                text = articleId ?: "Add new article"
             )
         }
     }

@@ -31,10 +31,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.nikakudirko.myapplication.screens.AboutScreen
 import com.example.nikakudirko.myapplication.screens.EditScreen
 import com.example.nikakudirko.myapplication.screens.HomeScreen
@@ -123,13 +125,17 @@ class MainActivity : ComponentActivity() {
 
                                     selectedItemIndex = index
 
-                                    navController.navigate(item.title){
+                                    navController.navigate(item.title ){
                                         launchSingleTop = true //?????
                                         popUpTo(navController.graph.findStartDestination().id){
                                             saveState = true
                                         }
                                         restoreState = true
                                     }
+
+
+
+
 
 
                                 },
@@ -161,20 +167,31 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     }
+                },
+                content = {
+                    NavHost(navController = navController, startDestination = Screen.HomeScreen.route){
+                        composable(Screen.HomeScreen.route){
+                            HomeScreen(navController)
+                        }
+                        composable(
+                            route = Screen.EditScreen.route + "?articleId = {articleId}",
+                            arguments = listOf(
+                                navArgument("articleId"){
+                                    type = NavType.StringType
+                                    nullable = true
+                                }
+                            )
+                        ){entry->
+
+                            EditScreen(navController, entry.arguments?.getString("articleId"))
+
+                        }
+                        composable(Screen.AboutScreen.route){
+                            AboutScreen()
+                        }
+                    }
                 }
-            ) {
-                NavHost(navController = navController, startDestination = Screen.HomeScreen.route){
-                    composable(Screen.HomeScreen.route){
-                       HomeScreen(navController)
-                    }
-                    composable(Screen.EditScreen.route){
-                       EditScreen(navController)
-                    }
-                    composable(Screen.AboutScreen.route){
-                       AboutScreen()
-                    }
-                }
-            }
+            )
         }
     }
 }
