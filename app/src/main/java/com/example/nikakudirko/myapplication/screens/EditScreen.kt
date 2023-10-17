@@ -35,16 +35,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.nikakudirko.myapplication.NewsArticle
 import com.example.nikakudirko.myapplication.R
 import com.example.nikakudirko.myapplication.Screen
+import com.example.nikakudirko.myapplication.viewmodels.EditViewModel
+import com.example.nikakudirko.myapplication.viewmodels.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditScreen(navController: NavController, articleId: String? = null) {
-    println(articleId)
+//fun EditScreen(navController: NavController, articleId: String? = null) {
+
+fun EditScreen(navController: NavController, onMemoryUpdate: () -> Unit) {
+
+    val viewModel: EditViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,8 +91,10 @@ fun EditScreen(navController: NavController, articleId: String? = null) {
         )
         TextField(
             modifier = Modifier,
-            value = authorNameText,
-            onValueChange = { authorNameText = it },
+            //value = authorNameText,
+            value = uiState.author,
+            //onValueChange = { authorNameText = it },
+            onValueChange = { newName -> viewModel.setArticleAuthor(newName) },
             textStyle = LocalTextStyle.current.copy(
                 textAlign = TextAlign.Left
             ),
@@ -106,8 +119,8 @@ fun EditScreen(navController: NavController, articleId: String? = null) {
         TextField(
             modifier = Modifier
                 .padding(vertical = 10.dp),
-            value = titleText,
-            onValueChange = { titleText = it },
+            value = uiState.title,
+            onValueChange = { newName -> viewModel.setArticleTitle(newName) },
             textStyle = LocalTextStyle.current.copy(
                 textAlign = TextAlign.Left
             ),
@@ -135,8 +148,9 @@ fun EditScreen(navController: NavController, articleId: String? = null) {
         ) {
 
             Switch(
-                checked = checkedState.value,
-                onCheckedChange = { checkedState.value = it },
+
+                checked = uiState.isDraft,
+                onCheckedChange = { isDraft -> viewModel.setArticleDraft(isDraft) },
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
                     uncheckedThumbColor = Color.White,
@@ -152,7 +166,7 @@ fun EditScreen(navController: NavController, articleId: String? = null) {
 
 
         Column(
-            modifier = Modifier.height(300.dp)
+            modifier = Modifier.height(200.dp)
         ) {
             OutlinedTextField(
                 modifier = Modifier
@@ -180,19 +194,35 @@ fun EditScreen(navController: NavController, articleId: String? = null) {
 
                 ),
             onClick = {
-                navController.navigate(Screen.HomeScreen.route) {
-                    launchSingleTop = true //?????
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
-                    }
-                    restoreState = true
-                }
+
+                viewModel.saveArticle()
+                navController.navigate(Screen.HomeScreen.route)
             },
 
             ) {
             Icon(imageVector = Icons.Filled.AttachFile, contentDescription = null)
             Text(
-                text = articleId ?: "Add new article"
+                text = "Add new article"
+            )
+        }
+
+        Button(
+            modifier = Modifier.padding(vertical = 10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.card_back),
+
+                ),
+            onClick = {
+
+                viewModel.deleteArticle()
+                navController.navigate(Screen.HomeScreen.route)
+
+            },
+
+            ) {
+            Icon(imageVector = Icons.Filled.AttachFile, contentDescription = null)
+            Text(
+                text = "Delete this article"
             )
         }
     }

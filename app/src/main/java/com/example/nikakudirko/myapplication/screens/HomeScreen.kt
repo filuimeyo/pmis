@@ -45,20 +45,36 @@ import com.example.nikakudirko.myapplication.viewmodels.HomeViewModel
 import java.util.UUID
 
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import com.example.nikakudirko.myapplication.MemoriesNavigationActions
 
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavHostController) {
     val viewModel: HomeViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val navActions: MemoriesNavigationActions = remember(navController) {
+        MemoriesNavigationActions(navController)
+    }
+
     HomeScreenContent(
         items = uiState.articles,
-        onEdit = {
-           println("Naigate with " + it)
-            navController.navigate(Screen.EditScreen.route + "?articleId="  + it.toString().trim())
+        onEdit = { memoryId ->
+            navActions.navigateToAddEditMemory(R.string.editscreen, memoryId)
+
+            // navController.navigate(Screen.EditScreen.withArgs(it.toString()))
+            /*  val id = it
+              navController.navigate(
+                  "${ADD_EDIT_MEMORYHOME_SCREEN}/$title".let {
+                      //  System.out.println(if (id != null) "$it?$MEMORY_ID_ARG=$id" else it)
+                      if (id != null) "$it?$MEMORY_ID_ARG=$id" else it
+                  }
+              )*/
         },
-        onRemove = { },
+        onRemove = {
+            viewModel.deleteAticle(it)
+        },
         navController = navController
     )
 }
@@ -66,7 +82,7 @@ fun HomeScreen(navController: NavController) {
 @Composable
 private fun HomeScreenContent(
     items: List<NewsArticle>,
-    onRemove: (NewsArticle) -> Unit,
+    onRemove: (UUID) -> Unit,
     onEdit: (UUID) -> Unit,
     navController: NavController
 ) {
@@ -94,7 +110,9 @@ private fun HomeScreenContent(
             items(items = items) { item ->
                 ArticleItem(
                     article = item,
-                    onRemove = {},
+                    onRemove = {
+                        onRemove(it)
+                    },
                     onEdit = {
 
                         onEdit(it)
@@ -189,6 +207,7 @@ private fun ArticleItem(
                 IconButton(
 
                     onClick = {
+                        onRemove(article.id)
                         Toast.makeText(contex, "Удаления пока нет", Toast.LENGTH_SHORT).show()
                     }
                 ) {

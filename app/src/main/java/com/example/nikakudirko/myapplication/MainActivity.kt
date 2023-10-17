@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
@@ -37,6 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.nikakudirko.myapplication.MemoriesDestinationsArgs.MEMORY_ID_ARG
 import com.example.nikakudirko.myapplication.screens.AboutScreen
 import com.example.nikakudirko.myapplication.screens.EditScreen
 import com.example.nikakudirko.myapplication.screens.HomeScreen
@@ -64,15 +66,12 @@ class MainActivity : ComponentActivity() {
     }
 
 
-
-
-
-
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
 
             val items = listOf(
                 BottomNavigationItem(
@@ -87,13 +86,13 @@ class MainActivity : ComponentActivity() {
                     unselectedIcon = Icons.Outlined.AddCircleOutline,
                     hasNews = false,
 
-                ),
+                    ),
                 BottomNavigationItem(
                     title = "about",
                     selectedIcon = Icons.Filled.Info,
                     unselectedIcon = Icons.Outlined.Info,
                     hasNews = false,
-                  //  badgeCount = 23,
+                    //  badgeCount = 23,
 
                 ),
             )
@@ -103,54 +102,65 @@ class MainActivity : ComponentActivity() {
 
             val navController = rememberNavController()
 
+            val navActions: MemoriesNavigationActions = remember(navController) {
+                MemoriesNavigationActions(navController)
+            }
+
             Scaffold(
-               // Modifier.background(color = colorResource(id = R.color.navbar_color)),
+                // Modifier.background(color = colorResource(id = R.color.navbar_color)),
 
                 bottomBar = {
                     NavigationBar(
                         containerColor = colorResource(id = R.color.navbar_color),
                         contentColor = colorResource(id = R.color.navbar_item)
-                    ){
+                    ) {
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentDestination = navBackStackEntry?.destination
-                        items.forEachIndexed{ index, item ->
+                        items.forEachIndexed { index, item ->
                             NavigationBarItem(
 
                                 colors = NavigationBarItemDefaults.colors(
                                     indicatorColor = colorResource(id = R.color.navbar_item)
                                 ),
 
-                                selected = currentDestination?.hierarchy?.any{it.route == item.title} == true ,
+                                selected = currentDestination?.hierarchy?.any { it.route == item.title } == true,
                                 onClick = {
 
                                     selectedItemIndex = index
 
-                                    navController.navigate(item.title ){
-                                        launchSingleTop = true //?????
-                                        popUpTo(navController.graph.findStartDestination().id){
-                                            saveState = true
+
+                                    if (index == 1) {
+                                        navController.navigate(Screen.EditScreen.withArgs(null.toString())) {
+                                            launchSingleTop = true //?????
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            restoreState = true
                                         }
-                                        restoreState = true
+                                    } else {
+                                        navController.navigate(item.title) {
+                                            launchSingleTop = true //?????
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            restoreState = true
+                                        }
                                     }
-
-
-
-
 
 
                                 },
                                 label = {
-                                        Text(text = item.title)
+                                    Text(text = item.title)
                                 },
                                 alwaysShowLabel = false,
                                 icon = {
                                     BadgedBox(
                                         badge = {
-                                            if(item.badgeCount != null){
+                                            if (item.badgeCount != null) {
                                                 Badge {
                                                     Text(text = item.badgeCount.toString())
                                                 }
-                                            } else if(item.hasNews){
+                                            } else if (item.hasNews) {
                                                 Badge()
                                             }
 
@@ -158,7 +168,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Icon(
                                             imageVector = if (index == selectedItemIndex) {
-                                                 item.selectedIcon
+                                                item.selectedIcon
                                             } else item.unselectedIcon,
                                             contentDescription = item.title
                                         )
@@ -169,24 +179,40 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 content = {
-                    NavHost(navController = navController, startDestination = Screen.HomeScreen.route){
-                        composable(Screen.HomeScreen.route){
+                    NavHost(
+                        navController = navController, startDestination = Screen.HomeScreen.route,
+
+                        ) {
+
+
+                        composable(Screen.HomeScreen.route) {
                             HomeScreen(navController)
                         }
                         composable(
-                            route = Screen.EditScreen.route + "?articleId = {articleId}",
+                            // route = Screen.EditScreen.route + "/{articleId}",
+                            route = MemoriesDestinations.ADD_EDIT_MEMORY_ROUTE,
                             arguments = listOf(
-                                navArgument("articleId"){
+                                navArgument(MEMORY_ID_ARG) {
                                     type = NavType.StringType
+                                    defaultValue = null
                                     nullable = true
                                 }
                             )
-                        ){entry->
+                        ) { entry ->
 
-                            EditScreen(navController, entry.arguments?.getString("articleId"))
+                            // EditScreen(navController, entry.arguments?.getString("articleId"))
+                            val memoryId = entry.arguments?.getString(MEMORY_ID_ARG)
+                            EditScreen(
+                                navController,
+                                onMemoryUpdate = {
+                                    navActions.navigateToMemories(
+                                        if (memoryId == null) ADD_EDIT_RESULT_OK else EDIT_RESULT_OK
+                                    )
+                                },
+                            )
 
                         }
-                        composable(Screen.AboutScreen.route){
+                        composable(Screen.AboutScreen.route) {
                             AboutScreen()
                         }
                     }
