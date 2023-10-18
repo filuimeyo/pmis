@@ -166,14 +166,13 @@ data class ArticleUiState(
 }
 
 class EditViewModel(
-    //val id: String?,
+
     savedStateHandle: SavedStateHandle
 
 ) : ViewModel() {
 
     private val repository: ArticlesRepository = ArticlesRepositoryImpl
 
-    //private val articles = repository.getArticle(UUID.fromString(id))
     private var articleId: String? = savedStateHandle[MEMORY_ID_ARG]
 
     private val _uiState = MutableStateFlow(ArticleUiState())
@@ -193,13 +192,13 @@ class EditViewModel(
             if (result == null) {
                 _uiState.update { it.copy(isLoading = false) }
             } else {
-                val article = result
+
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        title = article.title,
-                        author = article.author,
-                        isDraft = article.isDraft
+                        title = result.title,
+                        author = result.author,
+                        isDraft = result.isDraft
                     )
                 }
             }
@@ -249,7 +248,7 @@ class EditViewModel(
         viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isArticleSaving = true) }
-                System.out.println(articleId.toString())
+
                 if(articleId!=null) {
                     repository.delete(UUID.fromString(articleId))
                 }
@@ -262,8 +261,7 @@ class EditViewModel(
             finally {
                 _uiState.update { it.copy(isArticleSaving  = false) }
             }
-            // withLoading {
-            // }
+
         }
     }
 
@@ -297,48 +295,13 @@ class HomeViewModel : ViewModel() {
             isError = false
 
         )
-        /*when(articles){
-            is WorkResult.Error -> ArticlesListUiState(isError = true)
-            is WorkResult.Loading -> ArticlesListUiState(isLoading = true)
-            is WorkResult.Success -> ArticlesListUiState(articles = articles.data, isLoading = loadingItems > 0)
-        }*/
+
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ArticlesListUiState(isLoading = true)
     )
 
-    private companion object {
-
-        private val DefaultArticles = listOf(
-            NewsArticle(
-                title = "Мажу это на колено 3 день, прошла шишка....",
-                author = "Дундер Никита",
-                isDraft = true,
-
-                ),
-            NewsArticle(
-                title = "Закрой рот. Именно так сказал известный программист...",
-                author = "Дундер Никита",
-                isDraft = true,
-
-                ),
-            NewsArticle(
-                title = "Дундер Никита: сеньор с 5 лет",
-                author = "Дундер Никита",
-                isDraft = false,
-            ),
-            NewsArticle(
-                title = "Дундер Никита продал гит за сосиску в тесте",
-                author = "Я",
-                isDraft = false,
-
-                ),
-
-            )
-    }
-
-    val items: SnapshotStateList<NewsArticle> = DefaultArticles.toMutableStateList()
 
 
     private suspend fun withLoading(block: suspend () -> Unit) {
@@ -359,7 +322,6 @@ class HomeViewModel : ViewModel() {
             withLoading { repository.delete(articleId) }
         }
     }
-    fun onClickRemoveArticle(article: NewsArticle) = items.remove(article)
 
 }
 

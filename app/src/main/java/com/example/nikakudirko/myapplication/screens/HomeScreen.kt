@@ -63,7 +63,6 @@ fun HomeScreen(navController: NavHostController, paddingValues: PaddingValues) {
         items = uiState.articles,
         onEdit = { memoryId ->
             navActions.navigateToAddEditMemory(R.string.editscreen, memoryId)
-
             // navController.navigate(Screen.EditScreen.withArgs(it.toString()))
             /*  val id = it
               navController.navigate(
