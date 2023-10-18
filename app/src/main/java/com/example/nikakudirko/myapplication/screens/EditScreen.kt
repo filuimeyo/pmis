@@ -5,11 +5,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,7 +69,7 @@ fun EditScreen(navController: NavController, onMemoryUpdate: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        var authorNameText by remember {
+       /* var authorNameText by remember {
             mutableStateOf("")
         }
         var titleText by remember {
@@ -79,21 +83,11 @@ fun EditScreen(navController: NavController, onMemoryUpdate: () -> Unit) {
         val checkedState = remember {
             mutableStateOf(true)
         }
+*/
 
-
-        Text(
-            text = "Edit screen",
-            color = colorResource(id = R.color.text_dark_green2),
-            fontSize = 35.sp,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.ExtraBold,
-            letterSpacing = 4.sp
-        )
         TextField(
-            modifier = Modifier,
-            //value = authorNameText,
+            modifier = Modifier.width(300 .dp),
             value = uiState.author,
-            //onValueChange = { authorNameText = it },
             onValueChange = { newName -> viewModel.setArticleAuthor(newName) },
             textStyle = LocalTextStyle.current.copy(
                 textAlign = TextAlign.Left
@@ -118,7 +112,9 @@ fun EditScreen(navController: NavController, onMemoryUpdate: () -> Unit) {
 
         TextField(
             modifier = Modifier
-                .padding(vertical = 10.dp),
+                .padding(vertical = 10.dp)
+                .width(300.dp),
+
             value = uiState.title,
             onValueChange = { newName -> viewModel.setArticleTitle(newName) },
             textStyle = LocalTextStyle.current.copy(
@@ -139,7 +135,7 @@ fun EditScreen(navController: NavController, onMemoryUpdate: () -> Unit) {
                     contentDescription = null
                 )
             },
-            maxLines = 1
+
         )
 
 
@@ -165,8 +161,8 @@ fun EditScreen(navController: NavController, onMemoryUpdate: () -> Unit) {
         }
 
 
-        Column(
-            modifier = Modifier.height(200.dp)
+        /*Column(
+            modifier = Modifier.height(250.dp)
         ) {
             OutlinedTextField(
                 modifier = Modifier
@@ -185,46 +181,53 @@ fun EditScreen(navController: NavController, onMemoryUpdate: () -> Unit) {
                 placeholder = { Text(" name") },
             )
         }
+*/
+
+        Row {
+            Button(
+                modifier = Modifier.padding(vertical = 10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(id = R.color.card_back),
+
+                    ),
+                onClick = {
+
+                    viewModel.saveArticle()
+                    navController.navigate(Screen.HomeScreen.route)
+                },
+
+                ) {
+                Icon(imageVector = Icons.Filled.AttachFile, contentDescription = null)
+                Text(
+                    text = "save"
+                )
+            }
 
 
-        Button(
-            modifier = Modifier.padding(vertical = 10.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.card_back),
+            Button(
+                modifier = Modifier.padding(vertical = 10.dp, horizontal = 3 .dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(id = R.color.card_back),
 
-                ),
-            onClick = {
+                    ),
+                onClick = {
 
-                viewModel.saveArticle()
-                navController.navigate(Screen.HomeScreen.route)
-            },
+                    viewModel.deleteArticle()
+                    navController.navigate(Screen.HomeScreen.route)
 
-            ) {
-            Icon(imageVector = Icons.Filled.AttachFile, contentDescription = null)
-            Text(
-                text = "Add new article"
-            )
+                },
+
+                ) {
+                Icon(imageVector = Icons.Filled.Delete, contentDescription = null)
+                Text(
+                    text = "delete"
+                )
+            }
         }
 
-        Button(
-            modifier = Modifier.padding(vertical = 10.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.card_back),
 
-                ),
-            onClick = {
 
-                viewModel.deleteArticle()
-                navController.navigate(Screen.HomeScreen.route)
 
-            },
-
-            ) {
-            Icon(imageVector = Icons.Filled.AttachFile, contentDescription = null)
-            Text(
-                text = "Delete this article"
-            )
-        }
     }
 
 

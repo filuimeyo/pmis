@@ -144,20 +144,6 @@ object ArticlesRepositoryImpl : ArticlesRepository {
 }
 
 
-sealed class WorkResult<out R> {
-    data class Success<out T>(val data: T) : WorkResult<T>()
-    data class Error(val exception: Exception) : WorkResult<Nothing>()
-    object Loading : WorkResult<Nothing>()
-}
-
-sealed interface HomeState {
-    object Loading : HomeState
-    object Empty : HomeState
-    data class DisplayingCats(val cats: List<NewsArticle>) : HomeState
-    data class Error(val e: Exception) : HomeState
-}
-
-
 data class ArticlesListUiState(
     val articles: List<NewsArticle> = emptyList(),
     val isLoading: Boolean = false,
@@ -178,21 +164,6 @@ data class ArticleUiState(
 ) {
     val articlesDate = Date()
 }
-
-/*class EditViewModel: ViewModel(
-    val id: String?
-){
-
-    private  val ARTICLE_ID_ARG = "id"
-
-    private val repository: ArticlesRepository = ArticlesRepositoryImpl
-    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
-
-    private var articleId: String? = savedStateHandle[ARTICLE_ID_ARG]
-
-
-
-}*/
 
 class EditViewModel(
     //val id: String?,

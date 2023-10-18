@@ -178,7 +178,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 },
-                content = {
+                content = {paddingValues->
                     NavHost(
                         navController = navController, startDestination = Screen.HomeScreen.route,
 
@@ -186,7 +186,7 @@ class MainActivity : ComponentActivity() {
 
 
                         composable(Screen.HomeScreen.route) {
-                            HomeScreen(navController)
+                            HomeScreen(navController, paddingValues = paddingValues)
                         }
                         composable(
                             // route = Screen.EditScreen.route + "/{articleId}",

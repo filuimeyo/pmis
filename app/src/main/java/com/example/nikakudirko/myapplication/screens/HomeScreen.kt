@@ -6,6 +6,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -50,7 +51,7 @@ import com.example.nikakudirko.myapplication.MemoriesNavigationActions
 
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, paddingValues: PaddingValues) {
     val viewModel: HomeViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -75,7 +76,8 @@ fun HomeScreen(navController: NavHostController) {
         onRemove = {
             viewModel.deleteAticle(it)
         },
-        navController = navController
+        navController = navController,
+        paddingValues = paddingValues
     )
 }
 
@@ -84,45 +86,29 @@ private fun HomeScreenContent(
     items: List<NewsArticle>,
     onRemove: (UUID) -> Unit,
     onEdit: (UUID) -> Unit,
-    navController: NavController
+    navController: NavController,
+    paddingValues: PaddingValues
 ) {
-    System.out.println(items.toString())
-    Column(
+    LazyColumn(
         modifier = Modifier
-            .background(colorResource(id = R.color.background_light_green)),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(paddingValues)
+            .fillMaxSize()
+            .background(colorResource(id = R.color.background_light_green))
+
     ) {
-        Text(
-            text = "Home screen",
-            color = Color.Black,
-            fontSize = 35.sp,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.ExtraBold,
-            letterSpacing = 4.sp
-        )
+        items(items = items) { item ->
+            ArticleItem(
+                article = item,
+                onRemove = {
+                    onRemove(it)
+                },
+                onEdit = {
 
-        LazyColumn(
-            modifier = Modifier
-                .padding(vertical = 4.dp)
-                .fillMaxSize()
+                    onEdit(it)
 
-        ) {
-            items(items = items) { item ->
-                ArticleItem(
-                    article = item,
-                    onRemove = {
-                        onRemove(it)
-                    },
-                    onEdit = {
-
-                        onEdit(it)
-
-                    }
-                )
-            }
+                }
+            )
         }
-
-
     }
 }
 
@@ -208,7 +194,7 @@ private fun ArticleItem(
 
                     onClick = {
                         onRemove(article.id)
-                        Toast.makeText(contex, "Удаления пока нет", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(contex, "Item will be deleted", Toast.LENGTH_SHORT).show()
                     }
                 ) {
                     Icon(
